@@ -1,0 +1,94 @@
+#define cdd: //₩\
+  /$$$$$$  /$$$$$$$  /$$$$$$$\
+ /$$__  $$| $$__  $$| $$__  $$\
+| $$  \__/| $$  \ $$| $$  \ $$\
+| $$      | $$  | $$| $$  | $$\
+| $$      | $$  | $$| $$  | $$\
+| $$    $$| $$  | $$| $$  | $$\
+|  $$$$$$/| $$$$$$$/| $$$$$$$/\
+ \______/ |_______/ |_______/
+
+
+/*		OVERVIEW: //₩*/
+// #placeholder<overview> COLLAPSED
+
+//		TABLE OF CONTENTS: //₩*/
+// #placeholder<index> COLLAPSED
+
+#define history: //₩\
+ _  _ _    _                 \
+| || (_)__| |_ ___ _ _ _  _  \
+| __ | (_-<  _/ _ \ '_| || | \
+|_||_|_/__/\__\___/_|  \_, | \
+                       |__/  \
+                             I
+    >i started creating a cheat-sheet
+    >it grew too large to not be structured,
+      but i wasnt aware of markdown
+    >so i made up my own
+    >originally it just piggy-backed C++ highlighting
+    >then i slammed random "features" on it in the form of conventions
+    >when i converted to Vim and gained the ability to write my own highlighting rules,
+      many more features found their way in
+    ¤could it be markdown?
+        >technically
+        >however it would still have to be a dialect
+        >converting the base language would be pointless now
+        >i have ~50'000 lines of legacy markup and the muscle memory to go with it
+        >it also resembles art in a strange sense
+
+    this is a hidden context,
+    it will be removed from the output file
+    the end tag is supposed to be hidden backwards,
+    but i made a type years ago and now im just rolling with it
+    this is a hidden context,
+    it will be removed from the output file
+    the end tag is supposed to be hidden backwards,
+    but i made a type years ago and now im just rolling with it
+
+#define features: //₩\
+ ___         _                    \
+| __|__ __ _| |_ _  _ _ _ ___ ___ \
+| _/ -_) _` |  _| || | '_/ -_|_-< \
+|_|\___\__,_|\__|\_,_|_| \___/__/ I
+
+    #skip
+        this is a hidden context,
+        it will not be processed at all
+
+        originally it was #hidden and #neddin,
+        used for filtering notes relevant only to myself
+
+        the end tag was supposed to be hidden backwards,
+        but i made a type years ago and now im just rolling with it
+    #piks
+
+    Nesting: //₩
+        >we have title and node nesting
+        >nodes bits of information
+        >titles are for structuring and can appear in the table of contents
+        >nesting can be relative or absolute
+        >C label style titles are relatively nested
+        >C define style titles are absolutely nested
+        >absolute nesting is determined by the number of ':'s
+        >relative nesting is determined by adding up the indentation
+          and the previous absolute nesting
+        >relatively nested titles are easy to move and reorganize, only a cut is needed
+
+    Colors: //₩
+        >Green(CDD supports some color tags)
+        >Red(this only has significance for renderers)
+
+    Code:
+        @begin=<language>@
+        @end=<language>@
+        {@begin=python@
+            def fun(): pass
+        @end=python@}
+
+#define miscellaneous: //₩\
+ __  __ _            _ _                            \
+|  \/  (_)___ __ ___| | |__ _ _ _  ___ ___ _  _ ___ \
+| |\/| | (_-</ _/ -_) | / _` | ' \/ -_) _ \ || (_-< \
+|_|  |_|_/__/\__\___|_|_\__,_|_||_\___\___/\_,_/__/ I
+    >we depend on Plug for inserting the Overview and the Table of contents
