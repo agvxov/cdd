@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Pufka - Index</title>
+        <meta charset="utf-8">
+        <link rel="icon" href="favicon.png">
+        <link rel="stylesheet" href="/global.css">
+    </head>
+    <body>
+        <div id=side_menu>
+            <div style="position: fixed;">
+                <div id=logo>
+                    <a href="/index.html">&#x265D;</a>
+                    <div>Pufka</div>
+                </div>
+                <ul>
+                    [% FOREACH line IN overview %]
+                        <li>[% line %]</li>
+                    [% END %]
+                </ul>
+            </div>
+        </div>
+        <div id=content>
+            aaaaaaaaaaaaaaaaaaaaaaaa
+        </div>
+</html>

@@ -1,6 +1,7 @@
 %{
     #include <stdlib.h>
     #include <string.h>
+    #include <ctype.h>
     #include <string>
     #include <vector>
     #include <dictate.hpp>
@@ -24,34 +25,16 @@
     size_t prev_indent;
     size_t indent;
 
-    class Node {
-      public:
-        string text;
+    string to_title_case(string s) {
+        if (s.empty()) return s;
 
-        string render(void) const {
-            return text;
+        s[0] = toupper(s[0]);
+        for (size_t i = 1; i < s.size(); i++) {
+            s[i] = tolower(s[i]);
         }
-    } tmp_node;
-
-    class AbsoluteTitle : public Node {
-      public:
-        string banner;
         
-        string render(void) const {
-            return banner + text;
-        }
-    } tmp_absolutetitle;
-
-    class Subtitle : public Node {
-      public:
-        string render(void) const {
-            return text + ':';
-        }
-    } tmp_subtitle;
-
-    #include "tree.hh"
-    tree<Node> syntax_tree;
-    tree<Node>::iterator current_node;
+        return s;
+    }
 %}
 
 title       [a-zA-Z0-9_]+
@@ -59,7 +42,7 @@ ws          [ \t\r\v\f]
 wsnl        [ \t\r\v\f\n]
 link_root   \/\/(₩)|(0x[0-9a-d]+➞)
 
-%x IN_ABSOLUTE_TITLE IN_SUBTITLE IN_BANNER
+%x IN_ABSOLUTE_TITLE
 %x IN_NODE
 %x IN_INDENT
 %x IN_SKIP
@@ -80,24 +63,18 @@ link_root   \/\/(₩)|(0x[0-9a-d]+➞)
 #define\ {title}:           {
                                 BEGIN IN_ABSOLUTE_TITLE;
                                 size_t lprefix = strlen("#define ");
-                                tmp_title.name = string(yytext + lprefix, yyleng - lprefix - 1);
+                                tmp_title.name = to_title_case(string(yytext + lprefix, yyleng - lprefix - 1));
                             }
 {title}:{ws}*{link_root}    { // RELATIVE_TITLE
                                 size_t i;
                                 for (i = 0; yytext[i] != ':'; i++) { ; }
-                                tmp_title.name = string(yytext, i);
+                                tmp_title.name = to_title_case(string(yytext, i));
                                 tmp_title.nesting = last_absolute_nesting + indent;
                                 titles.push_back(tmp_title);
                                 tmp_title = (title_t) {
                                     .name = "",
                                     .nesting = 0,
                                 };
-                            }
-^{ws}*>                     {
-                                BEGIN IN_NODE;
-                            }
-^{ws}*-                     {
-                                BEGIN IN_SUBTITLE;
                             }
 .|\n                        { ; }
 }
@@ -113,34 +90,11 @@ link_root   \/\/(₩)|(0x[0-9a-d]+➞)
                             .name = "",
                             .nesting = 0,
                         };
-                        BEGIN IN_BANNER;
+                        BEGIN INITIAL;
                     }
 .|\n                { // false alarm, abort
                         BEGIN INITIAL;
                     }
-}
-
-<IN_BANNER>{
-\\\n                {
-                        tmp_title;
-                    }
-\n                  {
-
-                        BEGIN INITIAL;
-                    }
-}
-
-<IN_SUBTITLE>{
-.           {
-                tmp_subtitle.text += yytext;
-            }
-:           {
-                BEGIN INITIAL;
-                syntax_tree.append_child(current_node, tmp_subtitle);
-            }
-\n          {
-                tmp_subtitle.text += ' ';
-            }
 }
 
 <IN_SKIP>{
@@ -163,16 +117,6 @@ link_root   \/\/(₩)|(0x[0-9a-d]+➞)
             }
 }
 
-<IN_NODE>{
-.           {
-                tmp_node.text += yytext;
-            }
-\n          {
-                BEGIN INITIAL;
-                syntax_tree.append_child(current_node, tmp_node);
-            }
-}
-
 %%
 
 void make_overview(FILE * f) {
@@ -188,14 +132,14 @@ void make_toc(FILE * f) {
     for (size_t i = 0; i < titles.size(); i++) {
         const auto & title = titles[i];
         // indent
-        for (size_t i = 0; i < title.nesting; i++) {
+        for (size_t h = 0; h < title.nesting; h++) {
             fdictate(f, "    ");
         }
         // name
         fdictate(f, title.name.c_str());
         // trailing
         const size_t trailing = (LINK_PADDING - title.nesting*4 - title.name.size());
-        for (size_t i = 0; i < trailing; i++) {
+        for (size_t h = 0; h < trailing; h++) {
             fdictate(f, '.');
         }
         // number
@@ -204,15 +148,26 @@ void make_toc(FILE * f) {
     #undef LINK_PADDING
 }
 
-void render(void) {
-    for (const auto & it : syntax_tree) {
-        dictate(it.render());
+void render(const char * f, const char * of, const char * tf) {
+    if (not f
+    &&  not of
+    &&  not tf) {
+        return;
+    }
+
+    if (of) {
+        FILE * h_overview = fopen(of, "w");
+        make_overview(h_overview);
+        fclose(h_overview);
+    }
+
+    if (tf) {
+        FILE * h_toc = fopen(tf, "w");
+        make_toc(h_toc);
+        fclose(h_toc);
     }
 }
 
 int init_cddpp_l(void) {
-    syntax_tree.clear();
-    syntax_tree.set_head((Node) { .text = "" });
-    current_node = syntax_tree.begin();
     return 0;
 }
