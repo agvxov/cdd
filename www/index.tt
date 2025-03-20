@@ -7,20 +7,30 @@
         <link rel="stylesheet" href="/global.css">
     </head>
     <body>
-        <div id=side_menu>
-            <div style="position: fixed;">
-                <div id=logo>
-                    <a href="/index.html">&#x265D;</a>
-                    <div>Pufka</div>
-                </div>
-                <ul>
-                    [% FOREACH line IN overview %]
-                        <li>[% line %]</li>
-                    [% END %]
-                </ul>
-            </div>
-        </div>
+        [% INCLUDE sidebar.tt %]
         <div id=content>
-            aaaaaaaaaaaaaaaaaaaaaaaa
+            <pre>
+8 888888888o   8 8888      88 8 8888888888   8 8888     ,88'          .8.
+8 8888    `88. 8 8888      88 8 8888         8 8888    ,88'          .888.
+8 8888     `88 8 8888      88 8 8888         8 8888   ,88'          :88888.
+8 8888     ,88 8 8888      88 8 8888         8 8888  ,88'          . `88888.
+8 8888.   ,88' 8 8888      88 8 888888888888 8 8888 ,88'          .8. `88888.
+8 888888888P'  8 8888      88 8 8888         8 8888 88'          .8`8. `88888.
+8 8888         8 8888      88 8 8888         8 888888<          .8' `8. `88888.
+8 8888         ` 8888     ,8P 8 8888         8 8888 `Y8.       .8'   `8. `88888.
+8 8888           8888   ,d8P  8 8888         8 8888   `Y8.    .888888888. `88888.
+8 8888            `Y88888P'   8 8888         8 8888     `Y8. .8'       `8. `88888.
+            </pre>
+            <ul>
+            [% FOREACH line IN toc %]
+                [% IF line == ">" %]
+                    <ul>
+                [% ELSIF line == "<" %]
+                    </ul>
+                [% ELSE %]
+                    <li><a href=/[% line %]>[% line %]</a></li>
+                [% END %]
+            [% END %]
+            </ul>
         </div>
 </html>

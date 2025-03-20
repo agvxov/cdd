@@ -3,22 +3,45 @@ use strict;
 use warnings;
 use CGI;
 use Template;
-
-my $file = "overview.txt";
-open my $fh, '<', $file or die "Could not open '$file': $!";
-my @lines = <$fh>;
-close $fh;
-chomp @lines;
-
-my $tt = Template->new({
-    INCLUDE_PATH => '.',
-    INTERPOLATE  => 1,
-}) or die Template->error();
-
-my $vars = {
-    overview => \@lines,
-};
+use Data::Dumper;
 
 my $cgi = CGI->new;
-print $cgi->header('text/html');
-$tt->process('index.tt', $vars) or die $tt->error();
+
+my @ov_lines = do { open my $fh, '<', 'overview.txt' or die $!; chomp(my @l = <$fh>); @l };
+
+if ($cgi->param('path') eq ''
+or  $cgi->param('path') eq '/') {
+
+    my @toc_lines = do { open my $fh, '<', 'table_of_contents.txt' or die $!; chomp(my @l = <$fh>); @l };
+
+    my $tt = Template->new({
+        INCLUDE_PATH => '.',
+        INTERPOLATE  => 1,
+    }) or die Template->error();
+
+    my $vars = {
+        overview => \@ov_lines,
+        toc => \@toc_lines,
+    };
+
+    print $cgi->header('text/html');
+    $tt->process('index.tt', $vars) or die $tt->error();
+
+} else {
+
+    my $content = do { local $/; open my $fh, '<', "../out/@{[$cgi->param('path')]}.inc" or die $!; <$fh> };
+
+    my $tt = Template->new({
+        INCLUDE_PATH => '.',
+        INTERPOLATE  => 1,
+    }) or die Template->error();
+
+    my $vars = {
+        overview => \@ov_lines,
+        content => $content,
+    };
+
+    print $cgi->header(-type => 'text/html', -charset => 'utf-8');
+    $tt->process('page.tt', $vars) or die $tt->error();
+
+}

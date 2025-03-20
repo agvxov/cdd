@@ -4,13 +4,17 @@
     #include <ctype.h>
     #include <string>
     #include <vector>
+    #include <algorithm>
     #include <dictate.hpp>
+    #include <qx.h>
+    #include "cli.hpp"
 
     using namespace std;
 
     typedef struct {
         string name;
         size_t nesting;
+        int line;
     } title_t;
 
     vector<title_t> titles;
@@ -18,6 +22,7 @@
     title_t tmp_title = {
         .name = "",
         .nesting = 0,
+        .line = -1,
     };
 
     size_t last_absolute_nesting;
@@ -26,7 +31,7 @@
     size_t indent;
 
     string to_title_case(string s) {
-        if (s.empty()) return s;
+        if (s.empty()) { return s; }
 
         s[0] = toupper(s[0]);
         for (size_t i = 1; i < s.size(); i++) {
@@ -48,6 +53,7 @@ link_root   \/\/(₩)|(0x[0-9a-d]+➞)
 %x IN_SKIP
 %option nodefault
 %option noyywrap
+%option yylineno
 %%
 
 <INITIAL>{
@@ -64,6 +70,7 @@ link_root   \/\/(₩)|(0x[0-9a-d]+➞)
                                 BEGIN IN_ABSOLUTE_TITLE;
                                 size_t lprefix = strlen("#define ");
                                 tmp_title.name = to_title_case(string(yytext + lprefix, yyleng - lprefix - 1));
+                                tmp_title.line = yylineno;
                             }
 {title}:{ws}*{link_root}    { // RELATIVE_TITLE
                                 size_t i;
@@ -74,6 +81,7 @@ link_root   \/\/(₩)|(0x[0-9a-d]+➞)
                                 tmp_title = (title_t) {
                                     .name = "",
                                     .nesting = 0,
+                                    .line = -1,
                                 };
                             }
 .|\n                        { ; }
@@ -89,6 +97,7 @@ link_root   \/\/(₩)|(0x[0-9a-d]+➞)
                         tmp_title = (title_t) {
                             .name = "",
                             .nesting = 0,
+                            .line = -1,
                         };
                         BEGIN INITIAL;
                     }
@@ -148,7 +157,26 @@ void make_toc(FILE * f) {
     #undef LINK_PADDING
 }
 
-void render(const char * f, const char * of, const char * tf) {
+void make_www_toc(FILE * f) {
+    for (
+      size_t previous_nesting = 0, i = 0;
+      i < titles.size();
+      previous_nesting = titles[i].nesting, i++
+    ) {
+        const auto & title = titles[i];
+        // indent
+        if (previous_nesting < title.nesting) {
+            fdictate(f, ">\n");
+        } else
+        if (previous_nesting > title.nesting) {
+            fdictate(f, "<\n");
+        }
+        // name
+        fdictate(f, title.name.c_str(), '\n');
+    }
+}
+
+void render(render_backend_t r, const char * f, const char * of, const char * tf) {
     if (not f
     &&  not of
     &&  not tf) {
@@ -163,8 +191,40 @@ void render(const char * f, const char * of, const char * tf) {
 
     if (tf) {
         FILE * h_toc = fopen(tf, "w");
-        make_toc(h_toc);
+        switch (r) {
+            case RENDERER_TXT:  make_toc(h_toc);
+            case RENDERER_HTML: make_www_toc(h_toc);
+        }
         fclose(h_toc);
+    }
+
+    if (f
+    &&  r == RENDERER_HTML) {
+        vector<title_t> chapter_titles;
+        copy_if(
+            titles.begin(),
+            titles.end(),
+            std::back_inserter(chapter_titles),
+            [](const title_t& title) { return title.line != -1; }
+        );
+        for (size_t i = 0; i < chapter_titles.size(); i++) {
+            int from = chapter_titles[i].line;
+            char * q = qx("wc -l test/cdd.cdd | cut -d ' ' -f1");
+            int line_count;
+            sscanf(q, "%d", &line_count);
+            int until = (i == chapter_titles.size() - 1) ? line_count : chapter_titles[i+1].line-1;
+            char * cmd;
+            asprintf(&cmd, "sed -n '%d,%dp' '%s' > '%s/%s.inc'",
+                from,
+                until,
+                input_file,
+                output_file,
+                chapter_titles[i].name.c_str()
+            );
+            system(cmd);
+            free(cmd);
+            free(q);
+        }
     }
 }
 

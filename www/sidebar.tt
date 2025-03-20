@@ -1,0 +1,13 @@
+<div id=side_menu>
+    <div style="position: fixed;">
+        <div id=logo>
+            <a href="/index.html">&#x265D;</a>
+            <div>Pufka</div>
+        </div>
+        <ul>
+            [% FOREACH line IN overview %]
+                <li>[% line %]</li>
+            [% END %]
+        </ul>
+    </div>
+</div>

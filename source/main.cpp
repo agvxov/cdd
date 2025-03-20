@@ -1,6 +1,6 @@
 /* @BAKE
     flex -o cddpp.yy.cpp --header=cddpp.yy.hpp --debug cddpp.l
-    g++ -o cddpp main.cpp cli.cpp cddpp.yy.cpp -ldictate -ggdb
+    g++ -o cddpp main.cpp cli.cpp cddpp.yy.cpp -ldictate -lqx -ggdb
    @STOP
  */
 #include <stdio.h>
@@ -13,7 +13,7 @@ extern size_t n_skipped_lines;
 extern int init_cddpp_l(void);
 extern void make_overview(FILE * f);
 extern void make_toc(FILE * f);
-extern void render(const char * f, const char * of, const char * tf);
+extern void render(render_backend_t r, const char * f, const char * of, const char * tf);
 
 signed main(int argc, char * argv[]) {
     if (parse_arguments(argc, argv)) { return 1; }
@@ -25,7 +25,7 @@ signed main(int argc, char * argv[]) {
 
     fclose(yyin);
 
-    render(output_file, overview_file, toc_file);
+    render(render_backend, output_file, overview_file, toc_file);
 
     fdictate(stderr, n_skipped_lines, " lines were skipped.\n");
 

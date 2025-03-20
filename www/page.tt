@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Pufka - Index</title>
+        <meta charset="utf-8">
+        <link rel="icon" href="favicon.png">
+        <link rel="stylesheet" href="/global.css">
+    </head>
+    <body>
+        [% INCLUDE sidebar.tt %]
+        <div id=content>
+            <pre>[% content %]</pre>
+        </div>
+</html>

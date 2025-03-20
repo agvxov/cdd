@@ -53,7 +53,7 @@ int parse_arguments(int argc, char *argv[]) {
                 if (!strcmp(optarg, "txt")) {
                     render_backend = RENDERER_TXT;
                 } else
-                if (!strcmp(optarg, "html") == 0) {
+                if (!strcmp(optarg, "html")) {
                     render_backend = RENDERER_HTML;
                 } else {
                     fdictatef(stderr, "Invalid renderer backend: %s\n", optarg);
