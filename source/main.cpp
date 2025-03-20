@@ -1,6 +1,7 @@
 /* @BAKE
     flex -o cddpp.yy.cpp --header=cddpp.yy.hpp --debug cddpp.l
-    g++ -o cddpp main.cpp cli.cpp cddpp.yy.cpp -ldictate -lqx -ggdb
+    flex --prefix=cdd_html_ -o cdd_html.yy.cpp --header=cdd_html.yy.hpp --debug cdd_html.l
+    g++ -o cddpp main.cpp cli.cpp cddpp.yy.cpp cdd_html.yy.cpp -ldictate -lqx -ggdb
    @STOP
  */
 #include <stdio.h>

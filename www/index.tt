@@ -5,11 +5,21 @@
         <meta charset="utf-8">
         <link rel="icon" href="favicon.png">
         <link rel="stylesheet" href="/global.css">
+        <style>
+            #pufka-figlet {
+                color: lightblue;
+                background: black;
+                width: fit-content;
+                padding: 10px;
+                border: 7px solid var(--secondary-color);
+                border-radius: 3px;
+            }
+        </style>
     </head>
     <body>
         [% INCLUDE sidebar.tt %]
         <div id=content>
-            <pre>
+            <pre id=pufka-figlet>
 8 888888888o   8 8888      88 8 8888888888   8 8888     ,88'          .8.
 8 8888    `88. 8 8888      88 8 8888         8 8888    ,88'          .888.
 8 8888     `88 8 8888      88 8 8888         8 8888   ,88'          :88888.
@@ -19,8 +29,13 @@
 8 8888         8 8888      88 8 8888         8 888888<          .8' `8. `88888.
 8 8888         ` 8888     ,8P 8 8888         8 8888 `Y8.       .8'   `8. `88888.
 8 8888           8888   ,d8P  8 8888         8 8888   `Y8.    .888888888. `88888.
-8 8888            `Y88888P'   8 8888         8 8888     `Y8. .8'       `8. `88888.
-            </pre>
+8 8888            `Y88888P'   8 8888         8 8888     `Y8. .8'       `8. `88888.<!--
+         --></pre>
+            <h2>Introduction:</h2>
+            <p>
+                Pufka is your base of learning materials for CompSci in general.
+            </p>
+            <h2>Complete table of contents:</h2>
             <ul>
             [% FOREACH line IN toc %]
                 [% IF line == ">" %]

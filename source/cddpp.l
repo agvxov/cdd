@@ -9,6 +9,10 @@
     #include <qx.h>
     #include "cli.hpp"
 
+    extern FILE * cdd_html_in;
+    extern void cdd_html_restart( FILE *input_file  );
+    extern int cdd_html_lex(void);
+
     using namespace std;
 
     typedef struct {
@@ -35,6 +39,10 @@
 
         s[0] = toupper(s[0]);
         for (size_t i = 1; i < s.size(); i++) {
+            if (s[i] == '_') {
+                s[i] = ' ';
+                continue;
+            }
             s[i] = tolower(s[i]);
         }
         
@@ -45,7 +53,7 @@
 title       [a-zA-Z0-9_]+
 ws          [ \t\r\v\f]
 wsnl        [ \t\r\v\f\n]
-link_root   \/\/(₩)|(0x[0-9a-d]+➞)
+link_root   \/\/₩|\/\/\(0x[0-9a-f]+\)➞
 
 %x IN_ABSOLUTE_TITLE
 %x IN_NODE
@@ -166,10 +174,14 @@ void make_www_toc(FILE * f) {
         const auto & title = titles[i];
         // indent
         if (previous_nesting < title.nesting) {
-            fdictate(f, ">\n");
+            for (size_t h = 0; h < title.nesting - previous_nesting; h++) {
+                fdictate(f, ">\n");
+            }
         } else
         if (previous_nesting > title.nesting) {
-            fdictate(f, "<\n");
+            for (size_t h = 0; h < previous_nesting - title.nesting; h++) {
+                fdictate(f, "<\n");
+            }
         }
         // name
         fdictate(f, title.name.c_str(), '\n');
@@ -209,21 +221,34 @@ void render(render_backend_t r, const char * f, const char * of, const char * tf
         );
         for (size_t i = 0; i < chapter_titles.size(); i++) {
             int from = chapter_titles[i].line;
+
             char * q = qx("wc -l test/cdd.cdd | cut -d ' ' -f1");
             int line_count;
             sscanf(q, "%d", &line_count);
+            free(q);
+
             int until = (i == chapter_titles.size() - 1) ? line_count : chapter_titles[i+1].line-1;
+
+            string out_path = string() + output_file + '/' + chapter_titles[i].name + ".inc";
+
             char * cmd;
-            asprintf(&cmd, "sed -n '%d,%dp' '%s' > '%s/%s.inc'",
+            asprintf(&cmd, "sed -n '%d,%dp' '%s' > '%s'",
                 from,
                 until,
                 input_file,
-                output_file,
-                chapter_titles[i].name.c_str()
+                out_path.c_str()
             );
             system(cmd);
             free(cmd);
-            free(q);
+
+            string out_filepath = out_path + ".swp";
+
+            cdd_html_in = fopen(out_path.c_str(), "r");
+            cdd_html_out = fopen(output_file.c_str(), "r");
+            cdd_html_restart(cdd_html_in);
+            cdd_html_lex();
+            fclose(cdd_html_in);
+            rename(out_filepath, out_path);
         }
     }
 }
