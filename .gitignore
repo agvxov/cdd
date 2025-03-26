@@ -1,4 +1,5 @@
 .gdb_history
+cdd-stripper
 cddpp
 *.yy.*
 overview.txt
