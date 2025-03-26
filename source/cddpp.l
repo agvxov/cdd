@@ -9,10 +9,6 @@
     #include <qx.h>
     #include "cli.hpp"
 
-    extern FILE * cdd_html_in;
-    extern void cdd_html_restart( FILE *input_file  );
-    extern int cdd_html_lex(void);
-
     using namespace std;
 
     typedef struct {
@@ -34,7 +30,9 @@
     size_t prev_indent;
     size_t indent;
 
+    // i dont think converting to title case here is a good idea after all
     string to_title_case(string s) {
+      #if 0
         if (s.empty()) { return s; }
 
         s[0] = toupper(s[0]);
@@ -46,6 +44,7 @@
             s[i] = tolower(s[i]);
         }
         
+      #endif
         return s;
     }
 %}
@@ -136,9 +135,22 @@ link_root   \/\/₩|\/\/\(0x[0-9a-f]+\)➞
 
 %%
 
+vector<string> chapters_to_filter = {
+    string("OVERVIEW"),
+};
+
 void make_overview(FILE * f) {
     for (const auto & title : titles) {
         if (title.nesting == 0) {
+            if (
+                find(
+                    chapters_to_filter.begin(),
+                    chapters_to_filter.end(),
+                    title.name
+                ) != chapters_to_filter.end()
+            ) {
+                continue;
+            }
             fdictate(f, title.name.c_str(), "\n");
         }
     }
@@ -166,12 +178,33 @@ void make_toc(FILE * f) {
 }
 
 void make_www_toc(FILE * f) {
+    bool under_skipable = false;
     for (
       size_t previous_nesting = 0, i = 0;
       i < titles.size();
       previous_nesting = titles[i].nesting, i++
     ) {
         const auto & title = titles[i];
+
+        if (
+            find(
+                chapters_to_filter.begin(),
+                chapters_to_filter.end(),
+                title.name
+            ) != chapters_to_filter.end()
+        ) {
+            under_skipable = true;
+            continue;
+        }
+
+        if (under_skipable) {
+            if (title.nesting != 0) {
+                continue;
+            } else {
+                under_skipable = false;
+            }
+        }
+
         // indent
         if (previous_nesting < title.nesting) {
             for (size_t h = 0; h < title.nesting - previous_nesting; h++) {
@@ -217,7 +250,7 @@ void render(render_backend_t r, const char * f, const char * of, const char * tf
             titles.begin(),
             titles.end(),
             std::back_inserter(chapter_titles),
-            [](const title_t& title) { return title.line != -1; }
+            [](const title_t& title) { return title.nesting == 0 and title.line != -1; }
         );
         for (size_t i = 0; i < chapter_titles.size(); i++) {
             int from = chapter_titles[i].line;
@@ -240,15 +273,6 @@ void render(render_backend_t r, const char * f, const char * of, const char * tf
             );
             system(cmd);
             free(cmd);
-
-            string out_filepath = out_path + ".swp";
-
-            cdd_html_in = fopen(out_path.c_str(), "r");
-            cdd_html_out = fopen(output_file.c_str(), "r");
-            cdd_html_restart(cdd_html_in);
-            cdd_html_lex();
-            fclose(cdd_html_in);
-            rename(out_filepath, out_path);
         }
     }
 }

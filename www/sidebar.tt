@@ -1,12 +1,12 @@
 <div id=side_menu>
     <div id=logo>
-        <a href="/">&#x265D;</a>
-        <div>Pufka</div>
+            <div id=logo-char>&#x265D;</div>
+            <a href="/">Pufka</a>
     </div>
     <div id=content_list>
         <ul>
             [% FOREACH line IN overview %]
-                <li><a href=[% line %]>[% line %]</a></li>
+                <li><a href="[% line %]">[% title(line) %]</a></li>
             [% END %]
         </ul>
     </div>

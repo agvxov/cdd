@@ -7,6 +7,14 @@ use Data::Dumper;
 
 my $cgi = CGI->new;
 
+sub to_title_case {
+    my $str = shift;
+    $str =~ s/_/ /g;
+    $str = lc($str);
+    $str =~ s/^(.)/\U$1/;
+    return $str;
+}
+
 my @ov_lines = do { open my $fh, '<', 'overview.txt' or die $!; chomp(my @l = <$fh>); @l };
 
 if ($cgi->param('path') eq ''
@@ -20,6 +28,7 @@ or  $cgi->param('path') eq '/') {
     }) or die Template->error();
 
     my $vars = {
+        title => \&to_title_case,
         overview => \@ov_lines,
         toc => \@toc_lines,
     };
@@ -37,6 +46,7 @@ or  $cgi->param('path') eq '/') {
     }) or die Template->error();
 
     my $vars = {
+        title => \&to_title_case,
         overview => \@ov_lines,
         content => $content,
     };

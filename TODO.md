@@ -1,0 +1,2 @@
+- [ ] the project structure is fucked
+- [ ] dedent doenst work at all

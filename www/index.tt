@@ -29,23 +29,35 @@
 8 8888         8 8888      88 8 8888         8 888888<          .8' `8. `88888.
 8 8888         ` 8888     ,8P 8 8888         8 8888 `Y8.       .8'   `8. `88888.
 8 8888           8888   ,d8P  8 8888         8 8888   `Y8.    .888888888. `88888.
-8 8888            `Y88888P'   8 8888         8 8888     `Y8. .8'       `8. `88888.<!--
+8 8888            `Y88888P'   8 8888         8 8888     `Y8. .8'       `8. `88888.
+
+XXX          0x000000000000000000000000000000000000000000000000000000000000          XXX
+XXX         0x0                                                          0x0         XXX
+XXX        0x0    "Shall I tell you, my friend,"                          0x0        XXX
+XXX        0      "how you will come to under stand it?"                    0        XXX
+XXX        0      "Go and write a book upon it."                            0        XXX
+XXX        0                        -Henry Home, Lord Kames(1696-1782),     0        XXX
+XXX        0x0                      in a letter to Sir Gilbert Elliot     0x0        XXX
+XXX         0x0                                                          0x0         XXX
+XXX          0x000000000000000000000000000000000000000000000000000000000000          XXX<!--
          --></pre>
             <h2>Introduction:</h2>
             <p>
                 Pufka is your base of learning materials for CompSci in general.
             </p>
             <h2>Complete table of contents:</h2>
-            <ul>
-            [% FOREACH line IN toc %]
-                [% IF line == ">" %]
-                    <ul>
-                [% ELSIF line == "<" %]
-                    </ul>
-                [% ELSE %]
-                    <li><a href=/[% line %]>[% line %]</a></li>
+            <div style="margin-left: 20px;">
+                <ul>
+                [% FOREACH line IN toc %]
+                    [% IF line == ">" %]
+                        <ul>
+                    [% ELSIF line == "<" %]
+                        </ul>
+                    [% ELSE %]
+                        <li><a href="/[% line %]">[% title(line) %]</a></li>
+                    [% END %]
                 [% END %]
-            [% END %]
-            </ul>
+                </ul>
+            </div>
         </div>
 </html>

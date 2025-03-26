@@ -2,16 +2,30 @@
 
 CAT := bat --paging=never
 
-main:
-	bake source/main.cpp
+ifeq (${DEBUG}, 1)
+  #LFLAGS   += --debug --trace
+  #CFLAGS   += -O0 -ggdb -fno-inline
+  #CPPFLAGS += -DDEBUG
+endif
+
+SOURCE.d := source/
+OBJECT.d := object/
+CXXFLAGS := -I${SOURCE.d} -I${OBJECT.d}
+
+main: html compile test
+	for i in out/*.inc; do cp "$$i" "$$i.copy"; cdd-html "$$i.copy" > "$$i.swp"; mv "$$i.swp" "$$i"; done
+	mv overview.txt table_of_contents.txt www/
 
 html:
-	flex -o cdd_html.yy.cpp --prefix=cdd_html_ --debug source/cdd_html.l
-	g++ -o cdd-html -DCDD_HTML_MAIN cdd_html.yy.cpp -ldictate
+	flex ${LFLAGS} -o ${OBJECT.d}/cdd_html.yy.cpp ${SOURCE.d}/cdd_html.l
+	g++ -o cdd-html -DCDD_HTML_MAIN ${OBJECT.d}/cdd_html.yy.cpp -ldictate -ldedent -ggdb
+
+compile:
+	flex ${LFLAGS} -o ${OBJECT.d}/cddpp.yy.cpp --header=${SOURCE.d}/cddpp.yy.hpp ${SOURCE.d}/cddpp.l
+	g++ ${CXXFLAGS} -o cddpp ${SOURCE.d}/main.cpp ${SOURCE.d}/cli.cpp ${OBJECT.d}/cddpp.yy.cpp -ldictate -lqx -Wall -ggdb -fsanitize=address
 
 test:
-	#./source/cddpp -r html -o out -O overview.txt -T table_of_contents.txt -i test/cdd.cdd
-	./source/cddpp -r html -o out -O overview.txt -T table_of_contents.txt -i ../../pufka.cdd
-	${CAT} overview.txt
-	${CAT} table_of_contents.txt
-	mv overview.txt table_of_contents.txt www/
+	#cddpp -r html -o out -O overview.txt -T table_of_contents.txt -i test/cdd.cdd
+	cddpp -r html -o out -O overview.txt -T table_of_contents.txt -i ../../pufka.cdd
+	#${CAT} overview.txt
+	#${CAT} table_of_contents.txt
