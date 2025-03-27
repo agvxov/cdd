@@ -17,6 +17,7 @@ INPUT.cdd := ../../pufka.cdd
 
 main: html compile test
 	for i in out/*.inc; do cdd-stripper "$$i" > "$$i.swp"; mv "$$i.swp" "$$i"; done
+	for i in out/*.inc; do trail-fixer.pl "$$i" > "$$i.swp"; mv "$$i.swp" "$$i"; done
 	for i in out/*.inc; do cp "$$i" "$$i.copy"; cdd-html "$$i.copy" > "$$i.swp"; mv "$$i.swp" "$$i"; done
 	mv overview.txt table_of_contents.txt www/
 

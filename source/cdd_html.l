@@ -2,10 +2,17 @@
     #include <string>
     #include <dictate.hpp>
     #include <dedent.h>
+    #include <random>
 
     #define ECHOS(s) do {                            \
         const char * const  ss = s;                  \
         fwrite(ss, strlen(ss), sizeof(char), yyout); \
+    } while (0)
+    #define ECHOI(i) do {                            \
+        char *is = NULL;                             \
+        asprintf(&is, "%d", i);                      \
+        fwrite(is, strlen(is), sizeof(char), yyout); \
+        free(is);                                    \
     } while (0)
     #define ECHOC(c) fputc(c, yyout)
 
@@ -15,12 +22,29 @@
     bool ital_on = false;
 
     string code_buffer;
+    string language;
+
+    string generateRandomString(size_t length) {
+        const string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        random_device rd;  
+        mt19937 gen(rd()); 
+        uniform_int_distribution<> dis(0, characters.size() - 1);
+
+        string randomString;
+        for (size_t i = 0; i < length; ++i) {
+            randomString += characters[dis(gen)];
+        }
+
+        return randomString;
+    }
 %}
 
 ws          [ \t\r\v\f]
 wsnl        [ \t\r\v\f\n]
 title       [a-zA-Z0-9_]+
 link_root   \/\/₩|\/\/\(0x[0-9a-f]+\)➞
+heading     ^{ws}*{title}:{ws}*{link_root}
+begin_code  \{?@begin=[a-z]+@\n?
 
 %s IN_COMMENT IN_MULTILINE_COMMENT IN_CODE IN_DEFINE
 %option nodefault
@@ -58,6 +82,39 @@ link_root   \/\/₩|\/\/\(0x[0-9a-f]+\)➞
                         ECHO;
                         ECHOS("</span>");
                     }
+{heading}           {
+
+                        size_t space_count;
+                        for (space_count = 0; yytext[space_count] == ' '; space_count++) { ; }
+                        char header_number = '2' + (space_count / 4);
+
+                        size_t significant_end;
+                        for (
+                            significant_end = space_count;
+                            yytext[significant_end] != ':';
+                            significant_end++
+                        ) { ; }
+                        string significant_text = string(yytext, significant_end + 1);
+
+                        ECHOS("<span class=title>");
+                        ECHOS(significant_text.c_str());
+                        ECHOS("</span>");
+
+                        if (header_number <= '6') {
+                            string id = generateRandomString(6);
+                            ECHOS("<h");
+                            ECHOC(header_number);
+                            ECHOS(" id=");
+                            ECHOS(id.c_str());
+                            ECHOS(" style='visibility: hidden; display: inline;'>");
+
+                            ECHOS(significant_text.c_str());
+
+                            ECHOS("</h");
+                            ECHOC(header_number);
+                            ECHOC('>');
+                        }
+                    }
 ^{ws}*{title}:      {
                         ECHOS("<span class=title>");
                         ECHO;
@@ -65,6 +122,9 @@ link_root   \/\/₩|\/\/\(0x[0-9a-f]+\)➞
                     }
 NOTE:               {
                         ECHOS("<span class=NOTE></span>");
+                    }
+TLDR                {
+                        ECHOS("<span class=TLDR></span>");
                     }
 ^{ws}*YYY:          {
                         ECHOS("<span class='YYY'>See also:<span>");
@@ -111,19 +171,25 @@ Cons                {
 .|\n                {
                         ECHO;
                     }
-
-\{?@begin=[a-z]+@   {
+{begin_code}        {
                         BEGIN IN_CODE;
+                        size_t br = (yytext[0] == '{');
                         size_t lb = strlen("@begin=");
-                        size_t offset = (yytext[0] == '{');
-                        string language = string(yytext+lb+offset, yyleng-lb-1-offset);
-                        ECHOS("<code class=language-");
-                        ECHOS(language.c_str());
-                        ECHOS(">");
+                        size_t nl = (yytext[yyleng-1] == '\n');
+                        size_t offset = br + lb;
+                        language = string(yytext+offset, yyleng-(offset+nl));
                     }
 
-^#define            {
+^#define\ [_a-z]+   {
                         BEGIN IN_DEFINE;
+                        string name = string(yytext + strlen("#define "));
+                        string id = generateRandomString(6);
+                        ECHOS("<h1 style='visibility: hidden; font-size: 0;' id=");
+                        ECHOS(id.c_str());
+                        ECHOC('>');
+                        ECHOS(name.c_str());
+                        ECHOS("</h1>");
+
                         ECHOS("<span class=define>");
                         ECHO;
                     }
@@ -156,9 +222,22 @@ Cons                {
                         code_buffer += yytext;
                     }
 @end=[a-z]+@\}?     {
-                        char * code = dedent(strdup(code_buffer.c_str()));
-                        ECHOS(code);
+                        char * code = strdup(code_buffer.c_str());
+                        int width = (int)indent_width(code);
+                        code = dedent(code);
+                        // ---
+                        ECHOS("<code class=language-");
+                          ECHOS(language.c_str());
+
+                          ECHOS(" style='margin-left: ");
+                          ECHOI(width);
+                          ECHOS("ch'");
+                        ECHOS(">");
+
+                            ECHOS(code);
+
                         ECHOS("</code>");
+                        // ---
                         free(code);
                         code_buffer = "";
                         BEGIN INITIAL;

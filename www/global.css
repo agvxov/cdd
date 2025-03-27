@@ -1,67 +1,50 @@
 @font-face {
-	font-family: 'DeJaVuMono';
-	src: url(fonts/DejaVuSansMono.ttf);
+    font-family: 'DeJaVuMono';
+    src: url(fonts/DejaVuSansMono.ttf);
 }
 
 :root {
-	--text-color: #464646;
-	--text-literal-color: #5bb8a7;
-	--secondary-color: teal;
-	color: var(--text-color);
-	font-family: sans-serif;
-	font-size: 10pt;
-	tab-size: 4;
+    --text-color: #464646;
+    --text-literal-color: #5bb8a7;
+    --secondary-color: teal;
+    --my-border: 4px #308cc6 solid;
+    color: var(--text-color);
+    font-family: sans-serif;
+    font-size: 10pt;
+    tab-size: 4;
     overflow-x: hidden;
     background: rgba(0,0,0,.05);
 }
-br {
-	color: var(--text-color);
-}
 
-h1 {
-	font-size: 3rem;
-	margin-bottom: 2%;
-}
-
-h2 {
-	font-size: 1.7rem;
-	margin-bottom: 0;
-}
-
-h3 {
-	margin-bottom: 0;
+body {
+    margin: 0;
 }
 
 ul {
-	margin-top: 0;
-}
-
-body {
-	margin: 0;
-	height: 100vh;
+    margin-top: 0;
 }
 
 img, video {
-	border: 4px #308cc6 solid;
-	max-width: 80%;
-	margin-bottom: 100px;
+    border: var(--my-border);
+    max-width: 80%;
+    margin-bottom: 100px;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
 }
-	th {
-	  background-color: skyblue;
-	  border: 2px solid black;
-	  text-align: middle;
-	  padding: 8px;
-	}
-	td {
-	  border: 1px solid black;
-	  text-align: right;
-	  padding: 8px;
-	}
+    th {
+      background-color: skyblue;
+      border: 2px solid black;
+      text-align: middle;
+      padding: 8px;
+    }
+    td {
+      border: 1px solid black;
+      text-align: right;
+      padding: 8px;
+    }
 
 a {
     text-decoration: none;
@@ -74,11 +57,11 @@ a::after {
 }
 
 .greentext {
-	color: green;
+    color: green;
 }
-	.greentext::before {
-		content: "> ";
-	}
+    .greentext::before {
+        content: "> ";
+    }
 
 .pros {
     color: green;
@@ -91,47 +74,47 @@ a::after {
 }
 
 .NOTE, .TLDR {
-	color: black;
-	background: #962ac3;
-	font-family: DeJaVuMono, monospace;
+    color: black;
+    background: #962ac3;
+    font-family: DeJaVuMono, monospace;
 }
-	.NOTE::after {
-		content: "NOTE:";
-	}
-	.TLDR::after {
-		content: "TL;DR:";
-	}
+    .NOTE::after {
+        content: "NOTE:";
+    }
+    .TLDR::after {
+        content: "TL;DR";
+    }
 
 .YYY {
     font-weight: bold;
 }
 
 .comment {
-	color: #0688d0;
-	font-weight: bold;
-	/*font-size: 0.8em;*/
+    color: #0688d0;
+    font-weight: bold;
+    /*font-size: 0.8em;*/
 }
 
 .char_literal {
-	color: var(--text-literal-color);
+    color: var(--text-literal-color);
 }
-	.char_literal::before {
-		content: "'";
-	}
-	.char_literal::after {
-		content: "'";
-	}
+    .char_literal::before {
+        content: "'";
+    }
+    .char_literal::after {
+        content: "'";
+    }
 
 
 .string_literal {
-	color: var(--text-literal-color);
+    color: var(--text-literal-color);
 }
-	.string_literal::before {
-		content: "\"";
-	}
-	.string_literal::after {
-		content: "\"";
-	}
+    .string_literal::before {
+        content: "\"";
+    }
+    .string_literal::after {
+        content: "\"";
+    }
 
 .var {
     color: blue;
@@ -141,23 +124,25 @@ a::after {
 .title {
     color: darkorange;
     font-size: 1.2em;
+    margin-top: 0;
+    margin-bottom: 0;
     /*font-family: sans-serif;*/
 }
 
 code {
-	box-sizing: border-box;
-	border: 4px #308cc6 solid;
+    box-sizing: border-box;
+    border: var(--my-border);
     width: fit-content;
-	padding-left: 10px;
-	padding-right: 10px;
-	margin-left: 10px;
-	margin-right: 10px;
-	padding-top: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding-top: 5px;
 }
 
 div.code {
-	margin-top: 10px;
-	margin-bottom: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .define {
@@ -167,13 +152,13 @@ div.code {
 }
 
 #side_menu {
-	color: white;
-	background: var(--secondary-color);
+    color: white;
+    background: var(--secondary-color);
 
-	height: 100vh;
+    height: 100vh;
     width: 320px;
 
-	font-size: 1.5rem;
+    font-size: 1.5rem;
 
     position: fixed;
     top: 0;
@@ -184,19 +169,19 @@ div.code {
     flex-direction: column;
     align-items: center;
 }
-	#side_menu a {
-		color: white;
-	}
-	#logo {
-		text-align: center;
+    #side_menu a {
+        color: white;
+    }
+    #logo {
+        text-align: center;
         height: 20vh;
         padding-top: 20px;
         padding-bottom: 10px;
-	}
-		#logo-char {
-			font-size: 4em;
-			text-decoration: none;
-		}
+    }
+        #logo-char {
+            font-size: 4em;
+            text-decoration: none;
+        }
         #logo a::after {
             /* prevent link icon being added */
             content: "";
@@ -208,15 +193,15 @@ div.code {
     }
     #content_list>ul {
         list-style: none;
-	    margin-top: 10px;
-	    margin-bottom: 10px;
+        margin-top: 10px;
+        margin-bottom: 10px;
     }
 
 #content {
-	margin-left: 340px;
+    margin-left: 340px;
     width: fit-content;
 }
-	#content>div {
-		margin-left: 2%;
-		margin-right: 2%;
-	}
+    #content>div {
+        margin-left: 2%;
+        margin-right: 2%;
+    }
