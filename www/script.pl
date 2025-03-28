@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
+use Regexp::Common qw(whitespace);
 use CGI;
 use Template;
 use Data::Dumper;
@@ -37,8 +38,11 @@ or  $cgi->param('path') eq '/') {
     $tt->process('index.tt', $vars) or die $tt->error();
 
 } else {
-
-    my $content = do { local $/; open my $fh, '<', "../out/@{[$cgi->param('path')]}.inc" or die $!; <$fh> };
+    if ($cgi->param('path') !~ /^\w+(\.\w+)?$/) {
+        die "Invalid filename";
+    }
+    my $filename = '../out/' . $cgi->param('path') . '.inc';
+    my $content = do { local $/; open my $fh, '<', $filename or die $!; <$fh> };
 
     my $tt = Template->new({
         INCLUDE_PATH => '.',
