@@ -41,7 +41,7 @@ or  $cgi->param('path') eq '/') {
     if ($cgi->param('path') !~ /^\w+(\.\w+)?$/) {
         die "Invalid filename";
     }
-    my $filename = '../out/' . $cgi->param('path') . '.inc';
+    my $filename = 'out/' . $cgi->param('path') . '.inc';
     my $content = do { local $/; open my $fh, '<', $filename or die $!; <$fh> };
 
     my $tt = Template->new({
