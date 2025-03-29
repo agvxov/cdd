@@ -1,15 +1,20 @@
+// @BAKE sassc global.scss global.css
+
+// --- VARIABLES ---
+$text-color: #464646;
+$side-menu-color: teal;
+$text-literal-color: #5bb8a7;
+$comment-color: #0688d0;
+$my-border: 4px #308cc6 solid;
+
+// --- TAGS ---
 @font-face {
     font-family: 'DeJaVuMono';
     src: url(fonts/DejaVuSansMono.ttf);
 }
 
 :root {
-    --text-color: #464646;
-    --text-literal-color: #5bb8a7;
-    --secondary-color: teal;
-    --my-border: 4px #308cc6 solid;
-    --comment-color: #0688d0;
-    color: var(--text-color);
+    color: $text-color;
     font-family: sans-serif;
     font-size: 10pt;
     tab-size: 4;
@@ -26,43 +31,63 @@ ul {
 }
 
 img, video {
-    border: var(--my-border);
+    border: $my-border;
     max-width: 80%;
     margin-bottom: 100px;
 }
 
 table {
-  border-collapse: collapse;
-  width: 100%;
-}
+    border-collapse: collapse;
+    width: 100%;
+
     th {
-      background-color: skyblue;
-      border: 2px solid black;
-      text-align: middle;
-      padding: 8px;
+        background-color: skyblue;
+        border: 2px solid black;
+        text-align: middle;
+        padding: 8px;
     }
+
     td {
-      border: 1px solid black;
-      text-align: right;
-      padding: 8px;
+        border: 1px solid black;
+        text-align: right;
+        padding: 8px;
     }
+}
 
 a {
     text-decoration: none;
+
+    &::after {
+        content: "\00a0🔗"; /* unicode link icon */
+        margin-left: 4px;
+        text-decoration: none;
+    }
 }
 
-a::after {
-    content: "\00a0🔗"; /* unicode link icon */
-    margin-left: 4px;
-    text-decoration: none;
+code {
+    box-sizing: border-box;
+    border: $my-border;
+    width: fit-content;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding-top: 5px;
 }
 
+div.code {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+// --- CLASSES ---
 .greentext {
     color: green;
-}
-    .greentext::before {
+
+    &::before {
         content: "> ";
     }
+}
 
 .pros {
     color: green;
@@ -74,50 +99,63 @@ a::after {
     font-weight: bold;
 }
 
-.NOTE, .TLDR, .YYY {
+%special {
     color: black;
     background: #962ac3;
-    font-family: DeJaVuMono, monospace;
 }
-    .NOTE::after {
+
+.NOTE {
+    @extend %special;
+    &::after {
         content: "NOTE:";
     }
+}
+
+.TLDR {
+    @extend %special;
     .TLDR::after {
         content: "TL;DR";
     }
-    .YYY::after{
+}
+
+.YYY {
+    @extend %special;
+    font-weight: bold;
+    &::after{
         content: "See also:";
     }
-    .YYY {
-        font-weight: bold;
-    }
+}
 
 .comment {
-    color: var(--comment-color);
+    color: $comment-color;
     font-weight: bold;
     /*font-size: 0.8em;*/
 }
 
 .char_literal {
-    color: var(--text-literal-color);
+    color: $text-literal-color;
+
+    &::before {
+        content: "'";
+    }
+
+    &::after {
+        content: "'";
+    }
 }
-    .char_literal::before {
-        content: "'";
-    }
-    .char_literal::after {
-        content: "'";
-    }
 
 
 .string_literal {
-    color: var(--text-literal-color);
+    color: $text-literal-color;
+
+    &::before {
+        content: "\"";
+    }
+
+    &::after {
+        content: "\"";
+    }
 }
-    .string_literal::before {
-        content: "\"";
-    }
-    .string_literal::after {
-        content: "\"";
-    }
 
 .var {
     color: blue;
@@ -132,22 +170,6 @@ a::after {
     /*font-family: sans-serif;*/
 }
 
-code {
-    box-sizing: border-box;
-    border: var(--my-border);
-    width: fit-content;
-    padding-left: 10px;
-    padding-right: 10px;
-    margin-left: 10px;
-    margin-right: 10px;
-    padding-top: 5px;
-}
-
-div.code {
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
 .define {
     color: purple;
     background: rgba(0, 0, 0, 0.1);
@@ -156,7 +178,7 @@ div.code {
 
 #side_menu {
     color: white;
-    background: var(--secondary-color);
+    background: $side-menu-color;
 
     height: 100vh;
     width: 320px;
@@ -171,43 +193,50 @@ div.code {
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-    #side_menu a {
+
+    a {
         color: white;
     }
+
     #logo {
         text-align: center;
         height: 20vh;
         padding-top: 20px;
         padding-bottom: 10px;
-    }
+
         #logo-char {
             font-size: 4em;
             text-decoration: none;
         }
-        #logo a::after {
+        a::after {
             /* prevent link icon being added */
             content: "";
         }
+    }
+
     #content_list {
         overflow-y: scroll;
         background: #403c3c;
         width: fit-content;
+
+        > ul {
+            list-style: none;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
     }
-    #content_list>ul {
-        list-style: none;
-        margin-top: 10px;
-        margin-bottom: 10px;
-    }
+}
 
 #content {
     margin-left: 340px;
     width: fit-content;
-}
-    #content>div {
+
+    > div {
         margin-left: 2%;
         margin-right: 2%;
     }
-    #content a {
-        color: var(--comment-color);
+
+    a {
+        color: $comment-color;
     }
+}

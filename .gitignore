@@ -6,3 +6,5 @@ overview.txt
 table_of_contents.txt
 out/*
 cdd-html
+www/out/
+www/global.css
