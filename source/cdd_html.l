@@ -240,36 +240,36 @@ Cons                {
 }
 
 <IN_CODE>{
-\<                  {
-                        code_buffer += "&lt;";
-                    }
-\>                  {
-                        code_buffer += "&gt;";
-                    }
-.|\n                {
-                        code_buffer += yytext;
-                    }
-@end=[a-z]+@\}?     {
-                        char * code = strdup(code_buffer.c_str());
-                        int width = (int)indent_width(code);
-                        code = dedent(code);
-                        // ---
-                        ECHOS("<code class=language-");
-                          ECHOS(language.c_str());
+\<                      {
+                            code_buffer += "&lt;";
+                        }
+\>                      {
+                            code_buffer += "&gt;";
+                        }
+.|\n                    {
+                            code_buffer += yytext;
+                        }
+{ws}*@end=[a-z]+@\}?    {
+                            char * code = strdup(code_buffer.c_str());
+                            int width = (int)indent_width(code);
+                            code = dedent(code);
+                            // ---
+                            ECHOS("<code class=language-");
+                              ECHOS(language.c_str());
 
-                          ECHOS(" style='margin-left: ");
-                          ECHOI(width);
-                          ECHOS("ch'");
-                        ECHOS(">");
+                              ECHOS(" style='margin-left: ");
+                              ECHOI(width);
+                              ECHOS("ch'");
+                            ECHOS(">");
 
-                            ECHOS(code);
+                                ECHOS(code);
 
-                        ECHOS("</code>");
-                        // ---
-                        free(code);
-                        code_buffer = "";
-                        BEGIN INITIAL;
-                    }
+                            ECHOS("</code>");
+                            // ---
+                            free(code);
+                            code_buffer = "";
+                            BEGIN INITIAL;
+                        }
 }
 
 <IN_DEFINE>{
