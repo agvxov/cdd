@@ -57,7 +57,8 @@ heading     ^{ws}*{title}:{ws}*{link_root}
 begin_code  \{?@begin=[a-z]+@\n?
 href        https?:\/\/[a-zA-z0-9._%?/]+
 
-%s IN_COMMENT IN_MULTILINE_COMMENT IN_CODE IN_DEFINE
+%s IN_COMMENT IN_MULTILINE_COMMENT IN_DEFINE
+%x IN_CODE 
 %option nodefault
 %option noyywrap
 %%
@@ -239,6 +240,12 @@ Cons                {
 }
 
 <IN_CODE>{
+\<                  {
+                        code_buffer += "&lt;";
+                    }
+\>                  {
+                        code_buffer += "&gt;";
+                    }
 .|\n                {
                         code_buffer += yytext;
                     }
