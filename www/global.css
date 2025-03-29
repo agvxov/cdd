@@ -8,6 +8,7 @@
     --text-literal-color: #5bb8a7;
     --secondary-color: teal;
     --my-border: 4px #308cc6 solid;
+    --comment-color: #0688d0;
     color: var(--text-color);
     font-family: sans-serif;
     font-size: 10pt;
@@ -73,7 +74,7 @@ a::after {
     font-weight: bold;
 }
 
-.NOTE, .TLDR {
+.NOTE, .TLDR, .YYY {
     color: black;
     background: #962ac3;
     font-family: DeJaVuMono, monospace;
@@ -84,13 +85,15 @@ a::after {
     .TLDR::after {
         content: "TL;DR";
     }
-
-.YYY {
-    font-weight: bold;
-}
+    .YYY::after{
+        content: "See also:";
+    }
+    .YYY {
+        font-weight: bold;
+    }
 
 .comment {
-    color: #0688d0;
+    color: var(--comment-color);
     font-weight: bold;
     /*font-size: 0.8em;*/
 }
@@ -204,4 +207,7 @@ div.code {
     #content>div {
         margin-left: 2%;
         margin-right: 2%;
+    }
+    #content a {
+        color: var(--comment-color);
     }

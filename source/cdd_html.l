@@ -37,6 +37,16 @@
 
         return randomString;
     }
+
+    #define PRESERVE_LEADING_WHITESPACE\
+        char * PLW_c;\
+        for (\
+            PLW_c = yytext; \
+            *PLW_c == ' ' || *PLW_c == '\t';\
+            PLW_c++\
+        ) {\
+            ECHOC(*PLW_c);\
+        }
 %}
 
 ws          [ \t\r\v\f]
@@ -45,6 +55,7 @@ title       [a-zA-Z0-9_]+
 link_root   \/\/₩|\/\/\(0x[0-9a-f]+\)➞
 heading     ^{ws}*{title}:{ws}*{link_root}
 begin_code  \{?@begin=[a-z]+@\n?
+href        https?:\/\/[a-zA-z0-9._%?/]+
 
 %s IN_COMMENT IN_MULTILINE_COMMENT IN_CODE IN_DEFINE
 %option nodefault
@@ -115,19 +126,29 @@ begin_code  \{?@begin=[a-z]+@\n?
                             ECHOC('>');
                         }
                     }
+{ws}*{href}         {
+                        PRESERVE_LEADING_WHITESPACE;
+                        ECHOS("<a href='");
+                        ECHOS(PLW_c);
+                        ECHOS("'>");
+                        ECHOS(PLW_c);
+                        ECHOS("</a>");
+                    }
+{ws}*NOTE:          {
+                        PRESERVE_LEADING_WHITESPACE;
+                        ECHOS("<span class=NOTE></span>");
+                    }
+^{ws}*YYY:          {
+                        PRESERVE_LEADING_WHITESPACE;
+                        ECHOS("<span class='YYY'></span>");
+                    }
 ^{ws}*{title}:      {
                         ECHOS("<span class=title>");
                         ECHO;
                         ECHOS("</span>");
                     }
-NOTE:               {
-                        ECHOS("<span class=NOTE></span>");
-                    }
 TLDR                {
                         ECHOS("<span class=TLDR></span>");
-                    }
-^{ws}*YYY:          {
-                        ECHOS("<span class='YYY'>See also:<span>");
                     }
 ^{ws}*>             {
                         char * s = strdup(string(yytext, yyleng-1).c_str());
