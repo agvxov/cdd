@@ -45,6 +45,17 @@ XXX          0x000000000000000000000000000000000000000000000000000000000000     
             <p>
                 Pufka is your base of learning materials for CompSci in general.
             </p>
+            <p>
+                [% INCLUDE out/stats.txt %]
+            </p>
+            <p>
+                You may find the base document
+                <a href="https://github.com/agvxov/pufka_public/blob/master/pufka.cdd">here</a>
+                .<br/>
+                You may find the HTML rendering pipe-line
+                <a href="https://github.com/agvxov/cdd">here</a>
+                .<br/>
+            </p>
             <h2>Complete table of contents:</h2>
             <div style="margin-left: 20px;">
                 <ul>

@@ -3,7 +3,7 @@
 // --- VARIABLES ---
 $text-color: #464646;
 $side-menu-color: teal;
-$text-literal-color: #5bb8a7;
+$text-literal-color: #407f74;
 $comment-color: #0688d0;
 $my-border: 4px #308cc6 solid;
 
@@ -92,11 +92,19 @@ div.code {
 .pros {
     color: green;
     font-weight: bold;
+
+    &::after {
+        content: "Pros:";
+    }
 }
 
 .cons {
     color: red;
     font-weight: bold;
+
+    &::after {
+        content: "Cons:";
+    }
 }
 
 %special {
@@ -126,35 +134,27 @@ div.code {
     }
 }
 
+.XXX {
+    @extend %special;
+    font-weight: bold;
+    &::after{
+        content: "Prerequisites:";
+    }
+}
+
 .comment {
     color: $comment-color;
     font-weight: bold;
     /*font-size: 0.8em;*/
 }
 
-.char_literal {
+.char-literal {
     color: $text-literal-color;
-
-    &::before {
-        content: "'";
-    }
-
-    &::after {
-        content: "'";
-    }
 }
 
 
-.string_literal {
+.string-literal {
     color: $text-literal-color;
-
-    &::before {
-        content: "\"";
-    }
-
-    &::after {
-        content: "\"";
-    }
 }
 
 .var {
@@ -230,6 +230,7 @@ div.code {
 #content {
     margin-left: 340px;
     width: fit-content;
+    font-size: 14pt;
 
     > div {
         margin-left: 2%;
@@ -239,4 +240,31 @@ div.code {
     a {
         color: $comment-color;
     }
+}
+
+.red {
+    color: red;
+}
+
+.green {
+    color: green;
+}
+
+.blue {
+    color: blue;
+}
+
+.yellow {
+    color: olive;
+}
+
+.purple {
+    color: purple;
+}
+
+.figure {
+    width: 70%;
+    overflow-y: scroll;
+    background: #dadaca;
+    border: $my-border;
 }

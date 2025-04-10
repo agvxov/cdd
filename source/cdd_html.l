@@ -49,16 +49,17 @@
         }
 %}
 
-ws          [ \t\r\v\f]
-wsnl        [ \t\r\v\f\n]
-title       [a-zA-Z0-9_]+
-link_root   \/\/₩|\/\/\(0x[0-9a-f]+\)➞
-heading     ^{ws}*{title}:{ws}*{link_root}
-begin_code  \{?@begin=[a-z]+@\n?
-href        https?:\/\/[a-zA-z0-9._%?/]+
+ws              [ \t\r\v\f]
+wsnl            [ \t\r\v\f\n]
+title           [a-zA-Z0-9_]+
+link_root       \/\/₩|\/\/\(0x[0-9a-f]+\)➞
+heading         ^{ws}*{title}:{ws}*{link_root}
+begin_code      \{?@begin=[a-z]+@\n?
+begin_figure    {ws}*\{@begin=figure@\n
+href            https?:\/\/[-a-zA-z0-9._%?/=#]+
 
-%s IN_COMMENT IN_MULTILINE_COMMENT IN_DEFINE
-%x IN_CODE 
+%s IN_COMMENT IN_MULTILINE_COMMENT IN_DEFINE IN_STRING IN_COLOR
+%x IN_CODE IN_FIGURE
 %option nodefault
 %option noyywrap
 %%
@@ -143,6 +144,18 @@ href        https?:\/\/[a-zA-z0-9._%?/]+
                         PRESERVE_LEADING_WHITESPACE;
                         ECHOS("<span class='YYY'></span>");
                     }
+^{ws}*XXX:          {
+                        PRESERVE_LEADING_WHITESPACE;
+                        ECHOS("<span class='XXX'></span>");
+                    }
+^{ws}*[pP]ros:      {
+                        PRESERVE_LEADING_WHITESPACE;
+                        ECHOS("<span class=pros></span>");
+                    }
+^{ws}*[cC]ons:      {
+                        PRESERVE_LEADING_WHITESPACE;
+                        ECHOS("<span class=cons></span>");
+                    }
 ^{ws}*{title}:      {
                         ECHOS("<span class=title>");
                         ECHO;
@@ -170,16 +183,6 @@ TLDR                {
                         ECHOS("&#9675; ");
                         free(s);
                     }
-Pros                {
-                        ECHOS("<span class=pros>");
-                        ECHO;
-                        ECHOS("</span>");
-                    }
-Cons                {
-                        ECHOS("<span class=cons>");
-                        ECHO;
-                        ECHOS("</span>");
-                    }
 \/\/                {
                         BEGIN IN_COMMENT;
                         ECHOS("<span class=comment>");
@@ -190,8 +193,13 @@ Cons                {
                         ECHOS("<span class=comment>");
                         ECHO;
                     }
-.|\n                {
+\"                  {
+                        BEGIN IN_STRING;
+                        ECHOS("<span class=string-literal>");
                         ECHO;
+                    }
+{begin_figure}      {
+                        BEGIN IN_FIGURE;
                     }
 {begin_code}        {
                         BEGIN IN_CODE;
@@ -201,7 +209,6 @@ Cons                {
                         size_t offset = br + lb;
                         language = string(yytext+offset, yyleng-(offset+nl));
                     }
-
 ^#define\ [_a-z]+   {
                         BEGIN IN_DEFINE;
                         string name = string(yytext + strlen("#define "));
@@ -215,7 +222,44 @@ Cons                {
                         ECHOS("<span class=define>");
                         ECHO;
                     }
-
+Red\(               {
+                        BEGIN IN_COLOR;
+                        for (size_t i = 0; i < strlen("Red("); i++) {
+                            ECHOC(' ');
+                        }
+                        ECHOS("<span class=red>");
+                    }
+Green\(             {
+                        BEGIN IN_COLOR;
+                        for (size_t i = 0; i < strlen("Green("); i++) {
+                            ECHOC(' ');
+                        }
+                        ECHOS("<span class=green>");
+                    }
+Blue\(              {
+                        BEGIN IN_COLOR;
+                        for (size_t i = 0; i < strlen("Blue("); i++) {
+                            ECHOC(' ');
+                        }
+                        ECHOS("<span class=blue>");
+                    }
+Yellow\(            {
+                        BEGIN IN_COLOR;
+                        for (size_t i = 0; i < strlen("Yellow("); i++) {
+                            ECHOC(' ');
+                        }
+                        ECHOS("<span class=yellow>");
+                    }
+Purple\(            {
+                        BEGIN IN_COLOR;
+                        for (size_t i = 0; i < strlen("Purple("); i++) {
+                            ECHOC(' ');
+                        }
+                        ECHOS("<span class=purple>");
+                    }
+.|\n                {
+                        ECHO;
+                    }
 }
 
 <IN_COMMENT>{
@@ -272,6 +316,33 @@ Cons                {
                         }
 }
 
+<IN_FIGURE>{
+\<                      {
+                            code_buffer += "&lt;";
+                        }
+\>                      {
+                            code_buffer += "&gt;";
+                        }
+@end=figure@\}\n        {
+                            char * figure = strdup(code_buffer.c_str());
+                            int width = (int)indent_width(figure);
+                            figure = dedent(figure);
+                            // ---
+                            ECHOS("<div class=figure style='margin-left: ");
+                              ECHOI(width);
+                              ECHOS("ch'>");
+                            ECHOS(figure);
+                            ECHOS("</div>");
+                            // ---
+                            free(figure);
+                            code_buffer = "";
+                            BEGIN INITIAL;
+                        }
+.|\n                    {
+                            code_buffer += yytext;
+                        }
+}
+
 <IN_DEFINE>{
 \\\n        {
                 ECHO;
@@ -283,6 +354,31 @@ Cons                {
                 BEGIN INITIAL;
                 ECHO;
                 ECHOS("</span>");
+            }
+}
+
+<IN_STRING>{
+\\\"|\\\n   {
+                ECHO;
+            }
+\"|\n       {
+                ECHO;
+                ECHOS("</span>");
+                BEGIN INITIAL;
+            }
+.           {
+                ECHO;
+            }
+}
+
+<IN_COLOR>{
+\)          {
+                ECHOC(' ');
+                ECHOS("</span>");
+                BEGIN INITIAL;
+            }
+.|\n        {
+                ECHO;
             }
 }
 %%

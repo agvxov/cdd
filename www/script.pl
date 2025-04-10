@@ -50,6 +50,7 @@ or  $cgi->param('path') eq '/') {
     }) or die Template->error();
 
     my $vars = {
+        page_title => to_title_case($cgi->param('path')),
         title => \&to_title_case,
         overview => \@ov_lines,
         content => $content,

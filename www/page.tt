@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Pufka - Index</title>
+        <title>Pufka - [% page_title %]</title>
         <meta charset="utf-8">
         <link rel="icon" href="favicon.png">
         <link rel="stylesheet" href="/global.css">
         <link rel="stylesheet" href="lib/github-dark.min.css">
         <style>
-            .js-toc {
+            #js-toc-root {
                 position: fixed;
                 top: 0;
                 right: 0;
@@ -17,7 +17,12 @@
                 padding-top: 5px;
                 padding-left: 5px;
                 height: 100vh;
+                width: 350px;
                 overflow-y: scroll;
+            }
+
+            .js-toc {
+
             }
 
             .js-toc a::after {
@@ -27,7 +32,10 @@
     </head>
     <body>
         [% INCLUDE sidebar.tt %]
-        <div class="js-toc">
+        <div id="js-toc-root">
+            <button id="js-toc-toggle" onclick="hide_table_of_contents()">[Hide]</button>
+            <div class="js-toc">
+            </div>
         </div>
         <div id=content>
             <pre>[% content %]</pre>
@@ -43,6 +51,23 @@
               headingSelector: 'h1, h2, h3, h4, h5, h6',
               hasInnerContainers: true,
             });
+        </script>
+        <script>
+            function hide_table_of_contents() {
+                const toc     = document.querySelector('.js-toc');
+                const tocRoot = document.querySelector('#js-toc-root');
+                const tocTogg = document.querySelector('#js-toc-toggle');
+                
+                if (toc.style.display === 'none') {
+                    toc.style.display = '';
+                    tocRoot.style.height = '';
+                    tocTogg.textContent = '[Hide]';
+                } else {
+                    toc.style.display = 'none';
+                    tocRoot.style.height = 'fit-content';
+                    tocTogg.textContent = '[Show]';
+                }
+            }
         </script>
     </body>
 </html>

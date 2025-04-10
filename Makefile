@@ -18,9 +18,10 @@ INPUT.cdd := ../../pufka.cdd
 main: html compile test
 	for i in out/*.inc; do cdd-stripper "$$i" > "$$i.swp"; mv "$$i.swp" "$$i"; done
 	for i in out/*.inc; do trail-fixer.pl "$$i" > "$$i.swp"; mv "$$i.swp" "$$i"; done
-	for i in out/*.inc; do cp "$$i" "$$i.copy"; cdd-html "$$i.copy" > "$$i.swp"; mv "$$i.swp" "$$i"; done
+	for i in out/*.inc; do cdd-html "$$i" > "$$i.swp"; mv "$$i.swp" "$$i"; done
 	cp -r out/ www/
 	mv overview.txt table_of_contents.txt www/
+	rm out/*
 
 html:
 	flex ${LFLAGS} -o ${OBJECT.d}/cdd_html.yy.cpp ${SOURCE.d}/cdd_html.l
@@ -34,5 +35,7 @@ compile:
 
 test:
 	cddpp -r html -o out -O overview.txt -T table_of_contents.txt -i ${INPUT.cdd}
+	./stats.pl > out/stats.txt
+	sed -i 's/$$/<br\/>/' out/stats.txt
 	#${CAT} overview.txt
 	#${CAT} table_of_contents.txt
