@@ -126,8 +126,8 @@ hi def markdownH2Title			ctermfg=14
 "################
 " Pure_cdd:
 "	PostProcessor:
-syn match cdd_pp_hidden "^\s*#hidden"
-syn match cdd_pp_neddin "^\s*#neddin"
+syn match cdd_pp_hidden "^\s*#skip"
+syn match cdd_pp_neddin "^\s*#piks"
 "	Nodes:
 syn match cdd_node			"^\s*>"
 syn match cdd_father_node	"^\s*-"
@@ -150,6 +150,38 @@ hi def BoldItalicUnderline	term=bold,italic,underline cterm=bold,italic,underlin
 
 hi def Reverse				term=reverse cterm=reverse gui=reverse
 hi def link makeIdent		Identifier
+
+hi cddNodeDefault       cterm=bold ctermfg=46
+hi cddFatherDefault     cterm=bold ctermfg=226
+hi cddSymbolicDefault   cterm=bold ctermfg=11
+
+hi cddYeah              ctermfg=46
+hi cddNah               ctermfg=9
+
+hi cddBlue              ctermfg=4
+hi cddRed               ctermfg=1
+hi cddYellow            ctermfg=3
+hi cddGreen             ctermfg=2
+hi cddPurple            ctermfg=5
+hi cddGray              ctermfg=7
+
+hi def link cdd_node            cddNodeDefault
+hi def link cdd_father_node     cddFatherDefault
+hi def link cdd_symbolic_node   cddSymbolicDefault
+
+hi def link cdd_pp_hidden       PreProc
+hi def link cdd_pp_neddin       PreProc
+hi def link cdd_alias           Statement
+
+hi def link Yeah                cddYeah
+hi def link Nah                 cddNah
+
+hi def link Blue                cddBlue
+hi def link Red                 cddRed
+hi def link Yellow              cddYellow
+hi def link Green               cddGreen
+hi def link Purple              cddPurple
+hi def link Gray                cddGray
 "################
 
 function! TextEnableCodeSnip(filetype) abort	" credits to 'Ivan Tishchenko' on this function
