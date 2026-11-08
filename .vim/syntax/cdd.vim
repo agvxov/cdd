@@ -21,8 +21,8 @@ syn region Reverse start="\S\@<=ßß\|ßß\S\@=" end="\S\@<=ßß\|ßß\S\@=" ski
 
 "syn region Strike start="\S\@<=đđ\|đđ\S\@=" end="\S\@<=đđ\|đđ\S\@=" skip="\\đđ" 
 "	Make:
-syn region makeIdent	start="\$(" skip="\\)\|\\\\" end=")" contains=makeStatement,makeIdent
-syn region makeIdent	start="\${" skip="\\}\|\\\\" end="}" contains=makeStatement,makeIdent
+syn region makeIdentifer	start="\$(" end=")" contains=makeStatement,makeIdentifer
+syn region makeIdentifer	start="\${" end="}" contains=makeStatement,makeIdentifer
 "	C_sharp:
 syn region	csPreCondit	start="^\s*#\s*\%(define\|undef\|if\|elif\|else\|endif\|line\|error\|warning\|pragma\)\>" skip="\\$" end="$" contains=csComment keepend
 syn region	csRegion	matchgroup=csPreCondit start="^\s*#\s*region.*$" end="^\s*#\s*endregion" transparent fold contains=TOP
@@ -149,7 +149,7 @@ hi def ItalicUnderline		term=italic,underline cterm=italic,underline gui=italic,
 hi def BoldItalicUnderline	term=bold,italic,underline cterm=bold,italic,underline gui=bold,italic,underline
 
 hi def Reverse				term=reverse cterm=reverse gui=reverse
-hi def link makeIdent		Identifier
+hi def link makeIdentifer		Identifier
 
 hi cddNodeDefault       cterm=bold ctermfg=46
 hi cddFatherDefault     cterm=bold ctermfg=226
